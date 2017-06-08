@@ -1,3 +1,4 @@
+import os
 import cv2
 import Tkinter as tk
 from PIL import Image, ImageTk
@@ -13,6 +14,13 @@ funcBtnNum = 4
 btnSize = 160
 shift = 10
 imageFile = ['image/filter.png', 'image/sticker.png', 'image/paint.png', 'image/camera.png']
+
+# directory and file
+fileList = []
+photoDir = 'snapshot/'
+if os.path.exists(photoDir)==False:
+	os.mkdir(photoDir)
+photoNum = len(os.listdir(photoDir))
 
 # create camera - 640*480
 cap = cv2.VideoCapture()
@@ -40,13 +48,17 @@ def show_frame():
 		frame = filter.oldFashion(frame)
 	if btns[3].press:
 		btns[3].press = 0
-		cv2.imwrite('snapshot/photo.jpg', frame)
+		global photoNum
+		photoNum += 1
+		filename = 'snapshot/photo' + str(photoNum) + '.jpg'
+		cv2.imwrite(filename, frame)
 	img = fc.opencv2tkinter(frame)
 	video.imgtk = img
 	video.configure(image=img)
 	video.place(x = windowWidth-videoWidth, y = 0)
 	video.after(10, show_frame)
 
+# real time button callback
 def show_button(btn):
 	img = cv2.resize(btn.image, (btn.size, btn.size), interpolation=cv2.INTER_CUBIC)
 	imgtk = fc.opencv2tkinter(img)

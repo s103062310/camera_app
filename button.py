@@ -9,13 +9,11 @@ class Button:
 		self.x = x
 		self.y = y
 		self.size = size
-		self.press = 0
+		self.press = False
 		self.label = tk.Button(window, command=self.callback)
 
 	def callback(self):
-		if self.press==0:
-			self.press = 1
-			print 1
+		if self.press==False:
+			self.press = True
 		else:
-			self.press = 0
-			print 0
+			self.press = False
