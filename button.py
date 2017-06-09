@@ -3,6 +3,51 @@ import Tkinter as tk
 from PIL import Image, ImageTk
 import functions
 
+class Scale:
+
+	def __init__(self, window, x, y, length, name, var):
+		self.x = x
+		self.y = y
+		self.visible = False
+		self.text = tk.Label(window, text=name)
+		self.label = tk.Scale(window, length=length, variable=var, orient=tk.HORIZONTAL, showvalue=0)
+		var.set(50.0)
+
+	def hide(self):
+		if self.visible==True:
+			self.label.pack()
+			self.text.pack()
+			self.label.pack_forget()
+			self.text.pack_forget()
+			self.visible = False
+
+	def show(self):
+		if self.visible==False:
+			self.label.pack()
+			self.text.pack()
+			self.changeBtnView()
+			self.visible = True
+
+	def changeBtnView(self):
+		self.label.place(x = self.x, y = self.y)
+		self.text.place(x = self.x+130, y = self.y-20)
+
+class ScaleArray:
+
+	def __init__(self):
+		self.array = []
+
+	def append(self, window, x, y, length, name, var):
+		self.array.append(Scale(window, x, y, length, name, var))
+
+	def hide(self):
+		for scale in self.array:
+			scale.hide()
+
+	def show(self):
+		for scale in self.array:
+			scale.show()
+
 class Button:
 
 	def __init__(self, window, imagePath, x, y, size, num, belong, control):
@@ -142,7 +187,7 @@ class dirButton:
 
 	def defaultCallback(self):
 		index = self.labelBtns.nowPressed
-		if index<len(self.controlBtnArrays) and index>=0:
+		if index<2 and index>=0:
 			if self.type=='left':
 				LE, RE = self.controlBtnArrays[index].shiftLeft()
 				if self.end!=LE:
