@@ -4,7 +4,8 @@ import Tkinter as tk
 from PIL import Image, ImageTk
 import functions as fc
 import button
-import filter3
+import filter
+import sticker
 
 
 # define constant
@@ -15,7 +16,7 @@ btnSize = 160
 shift = 10
 photoDir = 'snapshot/'
 imageDir = 'image/'
-btnInfo = [['filter', 'sticker', 'paint', 'camera'], [0, 6, 0, 0], [True, False, True, False]]
+btnInfo = [['filter', 'sticker', 'property', 'camera'], [7, 6, 0, 0], [True, False, False, False]]
 
 # directory and file
 fileList = []
@@ -37,22 +38,34 @@ window.resizable(0, 0)
 video = tk.Label(window)
 video.pack()
 
+filterBtns = button.ButtonArray(btnInfo[2][0])
+for i in xrange(btnInfo[1][0]):
+	filename = imageDir + btnInfo[0][0] + str(i+1) + '.jpg'
+	filterBtns.append(window, filename, btnSize*(i+2) + shift, videoHeight + shift, btnSize-shift*2, i, None)
+
+stickerBtns = button.ButtonArray(btnInfo[2][1])
+for i in xrange(btnInfo[1][1]):
+	filename = imageDir + btnInfo[0][1] + str(i+1) + '.jpg'
+	stickerBtns.append(window, filename, btnSize*(i+2) + shift, videoHeight + shift, btnSize-shift*2, i, None)
+
+optionBtns = [filterBtns, stickerBtns]
 funcBtns = button.ButtonArray(False)
 for i in xrange(funcBtnNum):
-	if i==3:
-		num = -1
-	else:
-		num = i
 	filename = imageDir + btnInfo[0][i] + '.png'
-	funcBtns.append(window, filename, shift, btnSize*i+shift, btnSize-shift*2, num)
+	if i==3:
+		funcBtns.append(window, filename, shift, btnSize*i+shift, btnSize-shift*2, -1, None)
+	elif i==2:
+		funcBtns.append(window, filename, shift, btnSize*i+shift, btnSize-shift*2, i, None)
+	else:
+		funcBtns.append(window, filename, shift, btnSize*i+shift, btnSize-shift*2, i, optionBtns[i])
 	funcBtns.array[i].show()
 
-optionBtns = []
-for i in xrange(funcBtnNum):
-	optionBtns.append(button.ButtonArray(btnInfo[2][i]))
-	for j in xrange(btnInfo[1][i]):
-		filename = imageDir + btnInfo[0][i] + str(j+1) + '.jpg'
-		optionBtns[i].append(window, filename, btnSize*(j+2) + shift, videoHeight + shift, btnSize-shift*2, j)
+leftBtn = button.dirButton(window, 'image/left.jpg', btnSize+shift, videoHeight + shift, btnSize-shift*2, 'left', True, funcBtns, optionBtns)
+rightBtn = button.dirButton(window, 'image/right.jpg', btnSize*4+shift, videoHeight + shift, btnSize-shift*2, 'right', False, funcBtns, optionBtns)
+leftBtn.show()
+rightBtn.show()
+leftBtn.registerPartner(rightBtn)
+rightBtn.registerPartner(leftBtn)
 
 # real time video callback
 def show_frame():
@@ -61,16 +74,15 @@ def show_frame():
 
 	# btn effect
 	if funcBtns.array[0].press:
-		frame = filter3.Changing_Color(frame)
+		frame = filter.oldFashion(frame)
+	#if funcBtns.array[2].press:
+		#state = optionBtns[1].btnPressState()
+		#print state
+		#frame = sticker.allSticker(frame, [1,0,0,1,1,1])
 	if funcBtns.array[3].press:
 		global photoNum
 		photoNum = fc.snapshot(photoNum, frame)
 		funcBtns.array[3].defaultCallback()
-	for i in xrange(funcBtnNum-1):
-		if i==funcBtns.nowPressed:
-			optionBtns[i].show()
-		else:
-			optionBtns[i].hide()
 
 	img = fc.opencv2tkinter(frame)
 	video.imgtk = img
