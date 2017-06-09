@@ -1,7 +1,7 @@
 import cv2
 import Tkinter as tk
 from PIL import Image, ImageTk
-import functions as fc
+import functions
 
 class Button:
 
@@ -28,7 +28,7 @@ class Button:
 
 	def changeBtnView(self):
 		img = cv2.resize(self.image, (self.size, self.size), interpolation=cv2.INTER_CUBIC)
-		imgtk = fc.opencv2tkinter(img)
+		imgtk = functions.opencv2tkinter(img)
 		self.label.imgtk = imgtk
 		self.label.configure(image=imgtk)
 		self.label.place(x = self.x, y = self.y)
@@ -176,7 +176,7 @@ class dirButton:
 
 	def changeBtnView(self):
 		img = cv2.resize(self.image, (self.size, self.size), interpolation=cv2.INTER_CUBIC)
-		imgtk = fc.opencv2tkinter(img)
+		imgtk = functions.opencv2tkinter(img)
 		self.label.imgtk = imgtk
 		self.label.configure(image=imgtk)
 		self.label.place(x = self.x, y = self.y)
