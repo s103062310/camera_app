@@ -7,3 +7,8 @@ def opencv2tkinter(src):
 	dst = ImageTk.PhotoImage(image=dst)
 	return dst
 
+def snapshot(num, frame):
+	filename = 'snapshot/photo' + str(num) + '.jpg'
+	cv2.imwrite(filename, frame)
+	return num + 1
+

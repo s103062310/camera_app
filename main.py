@@ -4,7 +4,7 @@ import Tkinter as tk
 from PIL import Image, ImageTk
 import functions as fc
 import button
-import filter
+import filter3
 
 
 # define constant
@@ -13,11 +13,12 @@ videoWidth, videoHeight = 640, 480
 funcBtnNum = 4
 btnSize = 160
 shift = 10
-imageFile = ['image/filter.png', 'image/sticker.png', 'image/paint.png', 'image/camera.png']
+photoDir = 'snapshot/'
+imageDir = 'image/'
+btnInfo = [['filter', 'sticker', 'paint', 'camera'], [0, 6, 0, 0], [True, False, True, False]]
 
 # directory and file
 fileList = []
-photoDir = 'snapshot/'
 if os.path.exists(photoDir)==False:
 	os.mkdir(photoDir)
 photoNum = len(os.listdir(photoDir))
@@ -35,40 +36,47 @@ window.resizable(0, 0)
 # create labels
 video = tk.Label(window)
 video.pack()
-btns = []
+
+funcBtns = button.ButtonArray(False)
 for i in xrange(funcBtnNum):
-	btns.append(button.Button(window, imageFile[i], shift, btnSize*i+shift, btnSize-shift*2))
-	btns[i].label.pack()
+	if i==3:
+		num = -1
+	else:
+		num = i
+	filename = imageDir + btnInfo[0][i] + '.png'
+	funcBtns.append(window, filename, shift, btnSize*i+shift, btnSize-shift*2, num)
+	funcBtns.array[i].show()
+
+optionBtns = []
+for i in xrange(funcBtnNum):
+	optionBtns.append(button.ButtonArray(btnInfo[2][i]))
+	for j in xrange(btnInfo[1][i]):
+		filename = imageDir + btnInfo[0][i] + str(j+1) + '.jpg'
+		optionBtns[i].append(window, filename, btnSize*(j+2) + shift, videoHeight + shift, btnSize-shift*2, j)
 
 # real time video callback
 def show_frame():
 	_, frame = cap.read()
 	frame = cv2.flip(frame, 1)
-	if btns[0].press:
-		frame = filter.oldFashion(frame)
-	if btns[3].press:
-		btns[3].press = 0
+
+	# btn effect
+	if funcBtns.array[0].press:
+		frame = filter3.Changing_Color(frame)
+	if funcBtns.array[3].press:
 		global photoNum
-		photoNum += 1
-		filename = 'snapshot/photo' + str(photoNum) + '.jpg'
-		cv2.imwrite(filename, frame)
+		photoNum = fc.snapshot(photoNum, frame)
+		funcBtns.array[3].defaultCallback()
+	for i in xrange(funcBtnNum-1):
+		if i==funcBtns.nowPressed:
+			optionBtns[i].show()
+		else:
+			optionBtns[i].hide()
+
 	img = fc.opencv2tkinter(frame)
 	video.imgtk = img
 	video.configure(image=img)
 	video.place(x = windowWidth-videoWidth, y = 0)
 	video.after(10, show_frame)
 
-# real time button callback
-def show_button(btn):
-	img = cv2.resize(btn.image, (btn.size, btn.size), interpolation=cv2.INTER_CUBIC)
-	imgtk = fc.opencv2tkinter(img)
-	btn.label.imgtk = imgtk
-	btn.label.configure(image=imgtk)
-	btn.label.place(x = btn.x, y = btn.y)
-	btn.label.after(10, show_button)
-
 show_frame()
-for i in xrange(funcBtnNum):
-	show_button(btns[i])
-
 window.mainloop()
