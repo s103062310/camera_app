@@ -15,7 +15,7 @@ shift = 10
 barLength = 300
 photoDir = 'snapshot/'
 imageDir = 'image/'
-barInfo = [' Contrast ', 'Brightness','Saturation']
+barInfo = [[' Contrast ', 'Brightness','Saturation'], [[0.0, 10.0, 1.0, 0.1], [-255.0, 255.0, 0.0, 1.0], [0.0, 2.0, 1.0, 0.01]]]
 btnInfo = [['filter', 'sticker', 'property', 'camera'], [7, 7, 0, 0], [True, False, False, False], [0, 1, 2, -1]]
 
 # directory and file
@@ -47,7 +47,7 @@ adjustVar = []
 adjustBar = button.ScaleArray()
 for i in xrange(adjustNum):
 	adjustVar.append(tk.DoubleVar())
-	adjustBar.append(window, btnSize*2+shift, btnSize*3+shift*4*(i+1), barLength, False, barInfo[i], adjustVar[i])
+	adjustBar.append(window, btnSize*2+shift, btnSize*3+shift*4*(i+1), barLength, False, barInfo[1][i], barInfo[0][i], adjustVar[i])
 	allObject.append(adjustBar.array[i])
 
 # create function options buttons
@@ -108,9 +108,9 @@ def show_frame():
 
 	# btn effect - property
 	if funcBtns.array[2].press:
-		frame = filter.Contrast(frame, adjustVar[0].get()/100)
-		frame = filter.Brightness(frame, adjustVar[1].get()/100)
-		frame = filter.Saturation(frame, adjustVar[2].get()/100)
+		frame = filter.Contrast(frame, adjustVar[0].get())
+		frame = filter.Brightness(frame, adjustVar[1].get())
+		frame = filter.Saturation(frame, adjustVar[2].get())
 
 	# btn effect - snapshot
 	if funcBtns.array[3].press:

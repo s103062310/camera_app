@@ -5,37 +5,38 @@ import functions
 
 class Scale:
 
-	def __init__(self, window, x, y, length, showForever, name, var):
+	def __init__(self, window, x, y, length, showForever, value, name, var):
 		self.x = x
 		self.y = y
 		self.var = var;
-		self.var.set(50.0)
+		self.initialValue = value[2]
+		self.var.set(self.initialValue)
 		self.visible = False
 		self.showForever = showForever
 		self.text = tk.Label(window, text=name)
-		self.label = tk.Scale(window, length=length, variable=var, orient=tk.HORIZONTAL, showvalue=0)
+		self.label = tk.Scale(window, length=length, from_=value[0], to=value[1], resolution=value[3], variable=var, orient=tk.HORIZONTAL)
 
 	def hide(self):
 		if self.visible==True:
 			self.label.pack()
-			self.text.pack()
+			#self.text.pack()
 			self.label.pack_forget()
-			self.text.pack_forget()
+			#self.text.pack_forget()
 			self.visible = False
 
 	def show(self):
 		if self.visible==False:
 			self.label.pack()
-			self.text.pack()
+			#self.text.pack()
 			self.changeBtnView()
 			self.visible = True
 
 	def changeBtnView(self):
 		self.label.place(x = self.x, y = self.y)
-		self.text.place(x = self.x+130, y = self.y-20)
+		#self.text.place(x = self.x+130, y = self.y-20)
 
 	def reset(self):
-		self.var.set(50.0)
+		self.var.set(self.initialValue)
 		if self.showForever==False:
 			self.hide()
 
@@ -44,8 +45,8 @@ class ScaleArray:
 	def __init__(self):
 		self.array = []
 
-	def append(self, window, x, y, length, showForever, name, var):
-		self.array.append(Scale(window, x, y, length, showForever, name, var))
+	def append(self, window, x, y, length, showForever, value, name, var):
+		self.array.append(Scale(window, x, y, length, showForever, value, name, var))
 
 	def hide(self):
 		for scale in self.array:

@@ -67,14 +67,14 @@ def showImageAndPaint(num):
 			object.create_oval( x1, y1, x2, y2, outline='red', fill='red', width=2)
 		elif pen==2:	# blue
 			object.create_oval( x1, y1, x2, y2, outline='blue', fill='blue', width=2)
-		elif pen==3:	# blue
+		elif pen==3:	# green
 			object.create_oval( x1, y1, x2, y2, outline='green', fill='green', width=2)
 		elif pen==4:	# star
-			polygon_star(object, x1, y1, 9, 2, outline='gold', fill='gold', width=2)
+			polygon_star(object, x1, y1, 10, 3, outline='gold', fill='gold', width=1)
 		elif pen==5:	# cross
-			polygon_star(object, x1, y1, 5, 0, outline='white', fill='white', width=2)
+			polygon_star(object, x1, y1, 5, 0, outline='deepskyblue', fill='deepskyblue', width=2)
 		elif pen==6:	# tilted cross
-			polygon_star(object, x1, y1, 2, 5, outline='white', fill='white', width=2)
+			polygon_star(object, x1, y1, 2, 5, outline='red', fill='red', width=2)
 		#big square
 		#polygon_star(w,x1,y1,9,10,outline='gold',fill='blue', width=2)
 		#small square
