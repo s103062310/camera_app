@@ -42,11 +42,13 @@ video = tk.Label(window)
 video.pack()
 
 # create trackbars
+allObject = []
 adjustVar = []
 adjustBar = button.ScaleArray()
 for i in xrange(adjustNum):
 	adjustVar.append(tk.DoubleVar())
-	adjustBar.append(window, btnSize*2+shift, btnSize*3+shift*4*(i+1), barLength, barInfo[i], adjustVar[i])
+	adjustBar.append(window, btnSize*2+shift, btnSize*3+shift*4*(i+1), barLength, False, barInfo[i], adjustVar[i])
+	allObject.append(adjustBar.array[i])
 
 # create function options buttons
 optionBtns = []
@@ -54,7 +56,8 @@ for j in xrange(2):
 	optionBtns.append(button.ButtonArray(btnInfo[2][j]))
 	for i in xrange(btnInfo[1][j]):
 		filename = imageDir + btnInfo[0][j] + str(i+1) + '.jpg'
-		optionBtns[j].append(window, filename, btnSize*(i+2) + shift, videoHeight + shift, btnSize-shift*2, i, None)
+		optionBtns[j].append(window, filename, btnSize*(i+2)+shift, videoHeight+shift, btnSize-shift*2, i, False, None)
+		allObject.append(optionBtns[j].array[i])
 optionBtns.append(adjustBar)
 optionBtns.append(None)
 
@@ -62,16 +65,19 @@ optionBtns.append(None)
 funcBtns = button.ButtonArray(False)
 for i in xrange(funcBtnNum):
 	filename = imageDir + btnInfo[0][i] + '.png'
-	funcBtns.append(window, filename, shift, btnSize*i+shift, btnSize-shift*2, btnInfo[3][i], optionBtns[i])
+	funcBtns.append(window, filename, shift, btnSize*i+shift, btnSize-shift*2, btnInfo[3][i], True, optionBtns[i])
 	funcBtns.array[i].show()
+	allObject.append(funcBtns.array[i])
 
 # create direction buttons
-leftBtn = button.dirButton(window, 'image/left.jpg', btnSize+shift, videoHeight + shift, btnSize-shift*2, 'left', True, funcBtns, optionBtns)
-rightBtn = button.dirButton(window, 'image/right.jpg', btnSize*4+shift, videoHeight + shift, btnSize-shift*2, 'right', False, funcBtns, optionBtns)
+leftBtn = button.dirButton(window, 'image/left.jpg', btnSize+shift, videoHeight + shift, btnSize-shift*2, True, 'left', funcBtns, optionBtns)
+rightBtn = button.dirButton(window, 'image/right.jpg', btnSize*4+shift, videoHeight + shift, btnSize-shift*2, False, 'right', funcBtns, optionBtns)
 leftBtn.show()
 rightBtn.show()
 leftBtn.registerPartner(rightBtn)
 rightBtn.registerPartner(leftBtn)
+allObject.append(leftBtn)
+allObject.append(rightBtn)
 
 # real time video callback
 def show_frame():
@@ -109,8 +115,9 @@ def show_frame():
 	# btn effect - snapshot
 	if funcBtns.array[3].press:
 		global photoNum
-		photoNum = functions.snapshot(photoNum, frame)
-		funcBtns.array[3].defaultCallback()
+		photoNum = functions.snapshot(frame, photoNum)
+		functions.reset(allObject)
+		functions.showImageAndPaint(photoNum-1)
 
 	img = functions.opencv2tkinter(frame)
 	video.imgtk = img

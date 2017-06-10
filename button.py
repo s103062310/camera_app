@@ -5,13 +5,15 @@ import functions
 
 class Scale:
 
-	def __init__(self, window, x, y, length, name, var):
+	def __init__(self, window, x, y, length, showForever, name, var):
 		self.x = x
 		self.y = y
+		self.var = var;
+		self.var.set(50.0)
 		self.visible = False
+		self.showForever = showForever
 		self.text = tk.Label(window, text=name)
 		self.label = tk.Scale(window, length=length, variable=var, orient=tk.HORIZONTAL, showvalue=0)
-		var.set(50.0)
 
 	def hide(self):
 		if self.visible==True:
@@ -32,13 +34,18 @@ class Scale:
 		self.label.place(x = self.x, y = self.y)
 		self.text.place(x = self.x+130, y = self.y-20)
 
+	def reset(self):
+		self.var.set(50.0)
+		if self.showForever==False:
+			self.hide()
+
 class ScaleArray:
 
 	def __init__(self):
 		self.array = []
 
-	def append(self, window, x, y, length, name, var):
-		self.array.append(Scale(window, x, y, length, name, var))
+	def append(self, window, x, y, length, showForever, name, var):
+		self.array.append(Scale(window, x, y, length, showForever, name, var))
 
 	def hide(self):
 		for scale in self.array:
@@ -50,8 +57,7 @@ class ScaleArray:
 
 class Button:
 
-	def __init__(self, window, imagePath, x, y, size, num, belong, control):
-		print (imagePath, x, y, size, num)
+	def __init__(self, window, imagePath, x, y, size, num, showForever, belong, control):
 		self.image = cv2.imread(imagePath)
 		self.x = x
 		self.y = y
@@ -59,6 +65,7 @@ class Button:
 		self.num = num
 		self.press = False
 		self.visible = False
+		self.showForever = showForever
 		self.belong = belong
 		self.control = control
 		self.label = tk.Button(window, command=self.defaultCallback)
@@ -110,6 +117,12 @@ class Button:
 		self.y -= 10
 		self.changeBtnView()
 
+	def reset(self):
+		if self.press==True:
+			self.released()
+		if self.showForever==False:
+			self.hide()
+
 class ButtonArray:
 
 	def __init__(self, mutual):
@@ -119,9 +132,9 @@ class ButtonArray:
 		self.nowPressed = -1
 		self.first = 0
 
-	def append(self, window, filename, x, y, size, num, control):
+	def append(self, window, filename, x, y, size, num, showForever, control):
 		self.num += 1
-		self.array.append(Button(window, filename, x, y, size, num, self, control))
+		self.array.append(Button(window, filename, x, y, size, num, showForever, self, control))
 
 	def btnPressState(self):
 		state = []
@@ -173,8 +186,7 @@ class ButtonArray:
 
 class dirButton:
 
-	def __init__(self, window, imagePath, x, y, size, type, end, labelBtns, controlBtnArrays):
-		print (imagePath, x, y, size, type, end)
+	def __init__(self, window, imagePath, x, y, size, end, type, labelBtns, controlBtnArrays):
 		self.image = cv2.imread(imagePath)
 		self.x = x
 		self.y = y
@@ -237,3 +249,9 @@ class dirButton:
 		self.x -= 10
 		self.y -= 10
 		self.changeBtnView()
+
+	def reset(self):
+		if self.type=='left' and self.end!=True:
+			self.invert()
+		elif self.type=='right' and self.end!=False:
+			self.invert()
