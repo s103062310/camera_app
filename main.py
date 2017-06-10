@@ -12,7 +12,7 @@ adjustNum = 3
 funcBtnNum = 4
 btnSize = 160
 shift = 10
-barLength = 300
+barLength = 200
 photoDir = 'snapshot/'
 imageDir = 'image/'
 barInfo = [[' Contrast ', 'Brightness','Saturation'], [[0.0, 10.0, 1.0, 0.1], [-255.0, 255.0, 0.0, 1.0], [0.0, 2.0, 1.0, 0.01]]]
@@ -47,7 +47,7 @@ adjustVar = []
 adjustBar = button.ScaleArray()
 for i in xrange(adjustNum):
 	adjustVar.append(tk.DoubleVar())
-	adjustBar.append(window, btnSize*2+shift, btnSize*3+shift*4*(i+1), barLength, False, barInfo[1][i], barInfo[0][i], adjustVar[i])
+	adjustBar.append(window, btnSize*2+shift*11, btnSize*3+shift*(i*5+1), barLength, False, barInfo[1][i], barInfo[0][i], adjustVar[i])
 	allObject.append(adjustBar.array[i])
 
 # create function options buttons

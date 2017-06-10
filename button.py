@@ -19,21 +19,21 @@ class Scale:
 	def hide(self):
 		if self.visible==True:
 			self.label.pack()
-			#self.text.pack()
+			self.text.pack()
 			self.label.pack_forget()
-			#self.text.pack_forget()
+			self.text.pack_forget()
 			self.visible = False
 
 	def show(self):
 		if self.visible==False:
 			self.label.pack()
-			#self.text.pack()
+			self.text.pack()
 			self.changeBtnView()
 			self.visible = True
 
 	def changeBtnView(self):
 		self.label.place(x = self.x, y = self.y)
-		#self.text.place(x = self.x+130, y = self.y-20)
+		self.text.place(x = self.x-90, y = self.y+20)
 
 	def reset(self):
 		self.var.set(self.initialValue)
