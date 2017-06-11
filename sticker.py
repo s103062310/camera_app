@@ -10,6 +10,64 @@ def loadDetectModule():
 	kiss_cascade = cv2.CascadeClassifier('C:/opencv/sources/data/haarcascades/haarcascade_mcs_mouth.xml')
 	return (face_cascade, eye_cascade, mouth_cascade, kiss_cascade)
 
+def depart(img):
+	h, w, c = img.shape
+	img = img.reshape([w*h, c]).T
+	dst = []
+	for i in xrange(c):
+		temp = img[i][:]
+		temp = temp.T.reshape([h, w])
+		dst.append(temp)
+	return dst
+
+def merge(B, G, R):
+	h, w = B.shape
+	img = np.array([B, G, R]).reshape([3, -1])
+	img = img.T.reshape([h, w, 3])
+	return img
+
+def expend(img, height, width, x, y):
+	h, w = img.shape
+	print (x, y)
+	img = np.concatenate((np.zeros((x, w)), img), axis=0) # up
+	img = np.concatenate((img, np.zeros((height-h-x, w))), axis=0) # down
+	img = np.concatenate((np.zeros((height, y)), img), axis=1) # left
+	img = np.concatenate((img, np.zeros((height, width-w-y))), axis=1) # right
+	return img
+
+def addSmallImage(src, img, x, y, hscale, wscale, threshold):
+
+	# get basic info
+	img = cv2.resize(img, (int(img.shape[0]*hscale), int(img.shape[1]*wscale)), interpolation=cv2.INTER_CUBIC)
+	height, width, _ = src.shape
+	h, w, _ = img.shape
+
+	# depart every channel
+	src = depart(src)
+	srcB, srcG, srcR = src
+	img = depart(img)
+	imgB, imgG, imgR, imgA = img
+
+	# produce mask
+	imgA[imgA<threshold] = 0
+	imgA[imgA>=threshold] = 1
+
+	# expend small image to dst size
+	imgB = expend(imgB, height, width, x, y)
+	imgG = expend(imgG, height, width, x, y)
+	imgR = expend(imgR, height, width, x, y)
+	imgA = expend(imgA, height, width, x, y)
+	imgAinvert = 1-imgA
+
+	# stick - multiply with mask
+	dstB = np.multiply(srcB, imgAinvert) + np.multiply(imgB, imgA)
+	dstG = np.multiply(srcG, imgAinvert) + np.multiply(imgG, imgA)
+	dstR = np.multiply(srcR, imgAinvert) + np.multiply(imgR, imgA)
+
+	# merge
+	dst = merge(dstB, dstG, dstR).astype(np.uint8)
+	return dst
+
 def allSticker(img, choise, face_cascade, eye_cascade, mouth_cascade, kiss_cascade):
 
 	# added pic
@@ -31,6 +89,12 @@ def allSticker(img, choise, face_cascade, eye_cascade, mouth_cascade, kiss_casca
 
 			#add bunny ear
 			if choise[2]!=0:
+				#img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+				#w3,h3,c3=img3.shape
+				#w3=w3/2
+				#h3=h3/2
+				#img = addSmallImage(img, img3, int(x+h/2-h3/2), int(y+w/2-w3/2), 0.7, 0.7, 20)
+				#img = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
 				w3,h3,c3 = img3.shape
 				for i in xrange(0,w3):
 					for j in xrange(-h3/2,h3/2-1):

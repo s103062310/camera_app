@@ -56,19 +56,25 @@ class ScaleArray:
 		for scale in self.array:
 			scale.show()
 
+	def reset(self):
+		for scale in self.array:
+			scale.reset()
+
 class Button:
 
-	def __init__(self, window, imagePath, x, y, size, num, showForever, belong, control):
+	def __init__(self, window, imagePath, x, y, size, num, showForever, belong):
 		self.image = cv2.imread(imagePath)
 		self.x = x
 		self.y = y
+		self.init_x = x
+		self.init_y = y
 		self.size = size
 		self.num = num
 		self.press = False
 		self.visible = False
 		self.showForever = showForever
 		self.belong = belong
-		self.control = control
+		self.control = []
 		self.label = tk.Button(window, command=self.defaultCallback)
 
 	def defaultCallback(self):
@@ -104,11 +110,13 @@ class Button:
 		self.x += 10
 		self.y += 10
 		if self.num!=-1:
-			if self.belong.array[self.belong.nowPressed].control!=None:
-				self.belong.array[self.belong.nowPressed].control.hide()
-			if self.control!=None:
-				self.control.show()
+			for obj in self.belong.array[self.belong.nowPressed].control:
+				if obj!=None:
+					obj.hide()
 			self.belong.nowPressed = self.num
+			for obj in self.control:
+				if obj!=None:
+					obj.show()
 		self.changeBtnView()
 
 	def released(self):
@@ -123,6 +131,11 @@ class Button:
 			self.released()
 		if self.showForever==False:
 			self.hide()
+		self.x = self.init_x
+		self.y = self.init_y
+
+	def appendControl(self, obj):
+		self.control.append(obj)
 
 class ButtonArray:
 
@@ -133,9 +146,9 @@ class ButtonArray:
 		self.nowPressed = -1
 		self.first = 0
 
-	def append(self, window, filename, x, y, size, num, showForever, control):
+	def append(self, window, filename, x, y, size, num, showForever):
 		self.num += 1
-		self.array.append(Button(window, filename, x, y, size, num, showForever, self, control))
+		self.array.append(Button(window, filename, x, y, size, num, showForever, self))
 
 	def btnPressState(self):
 		state = []
@@ -185,6 +198,12 @@ class ButtonArray:
 		else:
 			return (False, False)
 
+	def reset(self):
+		self.nowPressed = -1
+		self.first = 0
+		for btn in self.array:
+			btn.reset()
+
 class dirButton:
 
 	def __init__(self, window, imagePath, x, y, size, end, type, labelBtns, controlBtnArrays):
@@ -225,12 +244,27 @@ class dirButton:
 			self.end = True
 			self.endView()
 
+	def hide(self):
+		pass
+
 	def show(self):
 		self.label.pack()
-		if self.end==True:
-			self.endView()
+		self.changeBtnView()
+		index = self.labelBtns.nowPressed
+		if index==-1 or index==2:
+			if self.end==False:
+				self.invert()
 		else:
-			self.changeBtnView()
+			if self.type=='left':
+				if self.end==False and self.controlBtnArrays[index].first==0:
+					self.invert()
+				elif self.end==True and self.controlBtnArrays[index].first!=0:
+					self.invert()
+			elif self.type=='right':
+				if self.end==False and self.controlBtnArrays[index].first==self.controlBtnArrays[index].num-2:
+					self.invert()
+				elif self.end==True and self.controlBtnArrays[index].first!=self.controlBtnArrays[index].num-2:
+					self.invert()
 
 	def changeBtnView(self):
 		img = cv2.resize(self.image, (self.size, self.size), interpolation=cv2.INTER_CUBIC)

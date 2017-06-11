@@ -75,17 +75,13 @@ def showImageAndPaint(num):
 			polygon_star(object, x1, y1, 5, 0, outline='deepskyblue', fill='deepskyblue', width=2)
 		elif pen==6:	# tilted cross
 			polygon_star(object, x1, y1, 2, 5, outline='red', fill='red', width=2)
-		#big square
-		#polygon_star(w,x1,y1,9,10,outline='gold',fill='blue', width=2)
-		#small square
-		#polygon_star(w,x1,y1,3,4,outline='gold',fill='blue', width=2)
 	object.bind( "<B1-Motion>", paint)
 
 	# create option btns
 	optionBtns = button.ButtonArray(True)
 	for i in xrange(penNum):
 		filename = 'image/pen' + str(i+1) + '.jpg'
-		optionBtns.append(window, filename, btnSize*(i+1)+shift, videoHeight+shift*2+btnSize/4, btnSize-2*shift, i, True, None)
+		optionBtns.append(window, filename, btnSize*(i+1)+shift, videoHeight+shift*2+btnSize/4, btnSize-2*shift, i, True)
 		optionBtns.array[i].show()
 
 	# create function btns
@@ -93,7 +89,7 @@ def showImageAndPaint(num):
 	funcBtns.nowPressed = 0
 
 	# create direction btns
-	leftBtn = button.dirButton(window, 'image/left.jpg', shift, videoHeight+shift*2+btnSize/4, btnSize-shift*2, True, 'left', funcBtns, [optionBtns])
+	leftBtn = button.dirButton(window, 'image/left.jpg', shift, videoHeight+shift*2+btnSize/4, btnSize-shift*2, False, 'left', funcBtns, [optionBtns])
 	rightBtn = button.dirButton(window, 'image/right.jpg', btnSize*3+shift, videoHeight+shift*2+btnSize/4, btnSize-shift*2, False, 'right', funcBtns, [optionBtns])
 	leftBtn.show()
 	rightBtn.show()

@@ -48,7 +48,7 @@ adjustBar = button.ScaleArray()
 for i in xrange(adjustNum):
 	adjustVar.append(tk.DoubleVar())
 	adjustBar.append(window, btnSize*2+shift*11, btnSize*3+shift*(i*5+1), barLength, False, barInfo[1][i], barInfo[0][i], adjustVar[i])
-	allObject.append(adjustBar.array[i])
+allObject.append(adjustBar)
 
 # create function options buttons
 optionBtns = []
@@ -56,8 +56,8 @@ for j in xrange(2):
 	optionBtns.append(button.ButtonArray(btnInfo[2][j]))
 	for i in xrange(btnInfo[1][j]):
 		filename = imageDir + btnInfo[0][j] + str(i+1) + '.jpg'
-		optionBtns[j].append(window, filename, btnSize*(i+2)+shift, videoHeight+shift, btnSize-shift*2, i, False, None)
-		allObject.append(optionBtns[j].array[i])
+		optionBtns[j].append(window, filename, btnSize*(i+2)+shift, videoHeight+shift, btnSize-shift*2, i, False)
+	allObject.append(optionBtns[j])
 optionBtns.append(adjustBar)
 optionBtns.append(None)
 
@@ -65,12 +65,12 @@ optionBtns.append(None)
 funcBtns = button.ButtonArray(False)
 for i in xrange(funcBtnNum):
 	filename = imageDir + btnInfo[0][i] + '.png'
-	funcBtns.append(window, filename, shift, btnSize*i+shift, btnSize-shift*2, btnInfo[3][i], True, optionBtns[i])
+	funcBtns.append(window, filename, shift, btnSize*i+shift, btnSize-shift*2, btnInfo[3][i], True)
 	funcBtns.array[i].show()
-	allObject.append(funcBtns.array[i])
+allObject.append(funcBtns)
 
 # create direction buttons
-leftBtn = button.dirButton(window, 'image/left.jpg', btnSize+shift, videoHeight + shift, btnSize-shift*2, True, 'left', funcBtns, optionBtns)
+leftBtn = button.dirButton(window, 'image/left.jpg', btnSize+shift, videoHeight + shift, btnSize-shift*2, False, 'left', funcBtns, optionBtns)
 rightBtn = button.dirButton(window, 'image/right.jpg', btnSize*4+shift, videoHeight + shift, btnSize-shift*2, False, 'right', funcBtns, optionBtns)
 leftBtn.show()
 rightBtn.show()
@@ -78,6 +78,12 @@ leftBtn.registerPartner(rightBtn)
 rightBtn.registerPartner(leftBtn)
 allObject.append(leftBtn)
 allObject.append(rightBtn)
+
+# set function btn control
+for i in xrange(funcBtnNum):
+	funcBtns.array[i].appendControl(optionBtns[i])
+	funcBtns.array[i].appendControl(leftBtn)
+	funcBtns.array[i].appendControl(rightBtn)
 
 # real time video callback
 def show_frame():
